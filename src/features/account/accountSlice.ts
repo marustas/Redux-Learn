@@ -1,4 +1,4 @@
-import type { LoanPurpose } from "../../types";
+import type { Action, LoanPurpose } from "../../types";
 
 interface AccountState {
   balance: number;
@@ -12,17 +12,10 @@ const initialAccountState: AccountState = {
   loanPurpose: null,
 };
 
-const accountReducer = (state = initialAccountState, action) => {
-  switch (action.type) {
-    case "account/deposit":
-      return { ...state, balance: state.balance + action.payload };
-    case "account/withdraw":
-      return { ...state, balance: state.balance - action.payload };
-
-    default:
-      return state;
-  }
-};
+type AccountActionType =
+  | "account/deposit"
+  | "account/withdraw"
+  | "account/requestLoan";
 
 export const deposit = (payload: number) => ({
   type: "account/deposit",
@@ -38,5 +31,19 @@ export const requestLoan = (amount: number, purpose: LoanPurpose) => ({
   type: "account/requestLoan",
   payload: { amount, purpose },
 });
+
+type AccountAction = Action<AccountActionType, number>;
+
+const accountReducer = (state = initialAccountState, action: AccountAction) => {
+  switch (action.type) {
+    case "account/deposit":
+      return { ...state, balance: state.balance + action.payload };
+    case "account/withdraw":
+      return { ...state, balance: state.balance - action.payload };
+
+    default:
+      return state;
+  }
+};
 
 export default accountReducer;
