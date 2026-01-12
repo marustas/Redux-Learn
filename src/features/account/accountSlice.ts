@@ -1,4 +1,5 @@
-import type { Action, LoanPurpose } from "../../types";
+import type { LoanPurpose } from "../../types";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface AccountState {
   balance: number;
@@ -6,44 +7,49 @@ interface AccountState {
   loanPurpose: LoanPurpose;
 }
 
-const initialAccountState: AccountState = {
+const initialState: AccountState = {
   balance: 0,
   loan: 0,
   loanPurpose: null,
 };
 
-type AccountActionType =
-  | "account/deposit"
-  | "account/withdraw"
-  | "account/requestLoan";
+const accountSlice = createSlice({
+  name: "account",
+  initialState,
+  reducers: {
+    deposit(state, action: PayloadAction<number>) {
+      state.balance += action.payload;
+    },
+    withdraw(state, action: PayloadAction<number>) {
+      state.balance -= action.payload;
+    },
+    requestLoan: {
+      prepare(payload: number, purpose: LoanPurpose) {
+        return {
+          payload,
+          meta: {
+            purpose,
+          },
+          error: null,
+        };
+      },
+      reducer(state, action) {
+        if (state.loan > 0) {
+          return;
+        }
 
-export const deposit = (payload: number): AccountAction => ({
-  type: "account/deposit",
-  payload,
+        state.loan += action.payload.amount;
+        state.loanPurpose = action.meta.purpose;
+        state.balance += action.payload.amount;
+      },
+    },
+    payLoan(state, action: PayloadAction<number>) {
+      state.balance -= action.payload;
+      state.loan -= action.payload;
+    },
+  },
 });
 
-export const withdraw = (payload: number): AccountAction => ({
-  type: "account/withdraw",
-  payload,
-});
+export const { deposit, withdraw, requestLoan, payLoan } = accountSlice.actions;
 
-export const requestLoan = (amount: number, purpose: LoanPurpose) => ({
-  type: "account/requestLoan",
-  payload: { amount, purpose },
-});
-
-type AccountAction = Action<AccountActionType, number>;
-
-const accountReducer = (state = initialAccountState, action: AccountAction) => {
-  switch (action.type) {
-    case "account/deposit":
-      return { ...state, balance: state.balance + action.payload };
-    case "account/withdraw":
-      return { ...state, balance: state.balance - action.payload };
-
-    default:
-      return state;
-  }
-};
-
-export default accountReducer;
+export default accountSlice.reducer;

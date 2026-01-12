@@ -1,3 +1,4 @@
+import type { Reducer } from "react";
 import type { Action } from "../../types";
 
 interface CustomerState {
@@ -33,7 +34,7 @@ type CustomerAction = Action<
   | { fullName: string; nationalID: string; createdAt: string | null }
 >;
 
-const customerReducer = (
+const customerReducer: Reducer<CustomerState, CustomerAction> = (
   state = initialCustomerState,
   action: CustomerAction
 ) => {

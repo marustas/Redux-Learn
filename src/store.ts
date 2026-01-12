@@ -1,14 +1,14 @@
-import { combineReducers, createStore } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import { useDispatch, useSelector } from "react-redux";
 import accountReducer from "./features/account/accountSlice";
 import customerReducer from "./features/customer/customerSlice";
 
-const rootReducer = combineReducers({
-  account: accountReducer,
-  customer: customerReducer,
+export const store = configureStore({
+  reducer: {
+    account: accountReducer,
+    customer: customerReducer,
+  },
 });
-
-export const store = createStore(rootReducer);
 
 type StoreState = ReturnType<typeof store.getState>;
 type StoreDispatch = typeof store.dispatch;
