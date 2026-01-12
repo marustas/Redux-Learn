@@ -2,19 +2,22 @@ import type { Action } from "../../types";
 
 interface CustomerState {
   fullName: string;
-  nationalID: number;
+  nationalID: string;
   createdAt: Date | null;
 }
 
 const initialCustomerState: CustomerState = {
   fullName: "",
-  nationalID: 0,
+  nationalID: "",
   createdAt: null,
 };
 
 type CustomerActionType = "customer/createCustomer" | "customer/updateName";
 
-export const createCustomer = (fullName: string, nationalID: number) => ({
+export const createCustomer = (
+  fullName: string,
+  nationalID: string
+): CustomerAction => ({
   type: "customer/createCustomer",
   payload: { fullName, nationalID, createdAt: new Date().toISOString() },
 });
@@ -27,7 +30,7 @@ export const updateName = (fullName: string) => ({
 type CustomerAction = Action<
   CustomerActionType,
   | { fullName: string }
-  | { fullName: string; nationalID: number; createdAt: string | null }
+  | { fullName: string; nationalID: string; createdAt: string | null }
 >;
 
 const customerReducer = (

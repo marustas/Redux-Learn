@@ -17,12 +17,12 @@ type AccountActionType =
   | "account/withdraw"
   | "account/requestLoan";
 
-export const deposit = (payload: number) => ({
+export const deposit = (payload: number): AccountAction => ({
   type: "account/deposit",
   payload,
 });
 
-export const withdraw = (payload: number) => ({
+export const withdraw = (payload: number): AccountAction => ({
   type: "account/withdraw",
   payload,
 });

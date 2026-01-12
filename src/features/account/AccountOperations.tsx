@@ -1,5 +1,7 @@
 import { useState } from "react";
 import type { LoanPurpose } from "../../types";
+import { store, useAppSelector } from "../../store";
+import { deposit, withdraw } from "./accountSlice";
 
 export const AccountOperations = () => {
   const [depositAmount, setDepositAmount] = useState<number | null>(null);
@@ -8,9 +10,22 @@ export const AccountOperations = () => {
   const [loanPurpose, setLoanPurpose] = useState<LoanPurpose>(null);
   const [currency, setCurrency] = useState("USD");
 
-  function handleDeposit() {}
+  const account = useAppSelector((state) => state.account);
 
-  function handleWithdrawal() {}
+  function handleDeposit() {
+    if (!depositAmount) {
+      return;
+    }
+    store.dispatch(deposit(depositAmount));
+  }
+
+  function handleWithdrawal() {
+    if (!withdrawalAmount) {
+      return;
+    }
+
+    store.dispatch(withdraw(withdrawalAmount));
+  }
 
   function handleRequestLoan() {}
 
@@ -67,10 +82,12 @@ export const AccountOperations = () => {
           <button onClick={handleRequestLoan}>Request loan</button>
         </div>
 
-        <div>
-          <span>Pay back $X</span>
-          <button onClick={handlePayLoan}>Pay loan</button>
-        </div>
+        {account.loan > 0 && (
+          <div>
+            <span>Pay back ${account.loan}</span>
+            <button onClick={handlePayLoan}>Pay loan</button>
+          </div>
+        )}
       </div>
     </div>
   );
