@@ -1,5 +1,4 @@
-import type { Reducer } from "react";
-import type { Action } from "../../types";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 interface CustomerState {
   fullName: string;
@@ -7,45 +6,36 @@ interface CustomerState {
   createdAt: Date | null;
 }
 
-const initialCustomerState: CustomerState = {
+const initialState: CustomerState = {
   fullName: "",
   nationalID: "",
   createdAt: null,
 };
 
-type CustomerActionType = "customer/createCustomer" | "customer/updateName";
-
-export const createCustomer = (
-  fullName: string,
-  nationalID: string
-): CustomerAction => ({
-  type: "customer/createCustomer",
-  payload: { fullName, nationalID, createdAt: new Date().toISOString() },
+const customerSlice = createSlice({
+  name: "customer",
+  initialState,
+  reducers: {
+    createCustomer: {
+      prepare(fullName: string, nationalID: string) {
+        return {
+          payload: null,
+          meta: { fullName, nationalID, createdAt: new Date().toISOString() },
+          error: null,
+        };
+      },
+      reducer(state, action) {
+        state.fullName = action.meta.fullName;
+        state.nationalID = action.meta.nationalID;
+        state.createdAt = action.meta.createdAt;
+      },
+    },
+    updateName(state, action: PayloadAction<string>) {
+      state.fullName = action.payload;
+    },
+  },
 });
 
-export const updateName = (fullName: string) => ({
-  type: "customer/updateName",
-  payload: { fullName },
-});
+export const { createCustomer, updateName } = customerSlice.actions;
 
-type CustomerAction = Action<
-  CustomerActionType,
-  | { fullName: string }
-  | { fullName: string; nationalID: string; createdAt: string | null }
->;
-
-const customerReducer: Reducer<CustomerState, CustomerAction> = (
-  state = initialCustomerState,
-  action: CustomerAction
-) => {
-  switch (action.type) {
-    case "customer/createCustomer":
-      return { ...state, ...action.payload };
-    case "customer/updateName":
-      return { ...state, fullName: action.payload.fullName };
-    default:
-      return state;
-  }
-};
-
-export default customerReducer;
+export default customerSlice.reducer;
